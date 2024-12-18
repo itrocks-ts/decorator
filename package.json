@@ -1,0 +1,53 @@
+{
+	"author": {
+		"name": "Baptiste Pillot",
+		"email": "baptiste@pillot.fr"
+	},
+	"dependencies": {
+		"@itrocks/class-type": "latest",
+		"reflect-metadata": "^0.2"
+	},
+	"description": "A library that simplifies the declaration, persistence, and retrieval of decorator values",
+	"devDependencies": {
+		"typescript": "~5.6"
+	},
+	"engines": {
+		"node": ">=18"
+	},
+	"exports": {
+		"./class": {
+			"import": "./esm/class.js",
+			"require": "./cjs/class.js"
+		},
+		"./property": {
+			"import": "./esm/property.js",
+			"require": "./cjs/property.js"
+		}
+	},
+	"files": [
+		"LICENSE",
+		"README.md",
+		"*/*.d.ts",
+		"*/*.js"
+	],
+	"keywords": [
+		"class decorators",
+		"decorator",
+		"decorators",
+		"it.rocks",
+		"metadata",
+		"persist",
+		"property decorators",
+		"reflection"
+	],
+	"license": "ISC",
+	"name": "@itrocks/decorator",
+	"repository": "https://github.com/itrocks-ts/decorator",
+	"scripts": {
+		"build": "npm run build:cjs && npm run build:esm",
+		"build:cjs": "tsc -p tsconfig.cjs.json",
+		"build:esm": "tsc -p tsconfig.esm.json"
+	},
+	"types": "./esm/decorator.d.ts",
+	"version": "0.0.1"
+}
