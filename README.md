@@ -49,21 +49,22 @@ This configuration ensures the decorators and their associated metadata are prop
 2. **Define Your Decorator:**\
   Use `decorate` or `decorateCallback` to define a new decorator that sets metadata on a class or property.
 
-3. **Use Your Decorator:**\
-  Apply your decorator to your class or property.
+3. **Apply Your Decorator:**\
+  Attach your decorator to the relevant class or property.
 
-4. **Retrieve Metadata:**\
-  Use `decoratorOf` or `decoratorOfCallback` to retrieve previously defined decorators from metadata values,
-  optionally providing a default fallback value or callback if none is present.
+4. **Retrieve Decorator values:**\
+  Use `decoratorOf` or `decoratorOfCallback` to retrieve access stored values from previously defined decorators.
+  You can also provide a default fallback value or a callback if no data is present.
 
 ## Example use case
 
-In these example, type helpers from dependency [@itrocks/class-type](https://www.npmjs.com/packages/@itrocks/classtype)
-are used. Feel free using compatible types in your code, if you don't want to use those, but they are here to help.
+In these example, type helpers from the dependency
+[@itrocks/class-type](https://www.npmjs.com/package/@itrocks/class-type) are used.
+You can use compatible types from other sources if preferred, but these helpers are provided for convenience.
 
 ### Class-level example
 
-Define a persisting decorator, and its retrieval function:
+Define a persistent decorator and its retrieval function:
 ```ts
 import { decorate, decoratorOf } from '@itrocks/decorator/class'
 import { ObjectOrType }          from '@itrocks/class-type'
@@ -79,7 +80,7 @@ export function actionsOf(target: ObjectOrType) {
 }
 ```
 
-Use your decorators into your classes, or not:
+Use your decorators in your classes, or not:
 ```ts
 class FullService {}
 
@@ -87,20 +88,20 @@ class FullService {}
 class RestrictedService {}
 ```
 
-Check your decorators values from anywhere in your code:
+Retrieve decorator values from anywhere in your code:
 ```ts
-console.log(actionsOf(FullService))         // Outputs default: ['create', 'update', 'delete']
-console.log(actionsOf(RestrictedService))   // Outputs ['create', 'update']
+console.log(actionsOf(FullService))         // Default: ['create', 'update', 'delete']
+console.log(actionsOf(RestrictedService))   // ['create', 'update']
 ```
 
-It works with objects too:
+It also works with objects:
 ```ts
-console.log(actionsOf(new RestrictedService))   // Outputs ['create', 'update']
+console.log(actionsOf(new RestrictedService))   // ['create', 'update']
 ```
 
 ### Property-level example
 
-Define a persisting decorator, and its retrieval function:
+Define a persistent decorator and its retrieval function:
 ```ts
 import { decorate, decoratorOf } from '@itrocks/decorator/property'
 import { KeyOf, ObjectOrType }   from '@itrocks/class-type'
@@ -116,7 +117,7 @@ function componentOf<T extends object>(target: ObjectOrType<T>, property: KeyOf<
 }
 ```
 
-Use your decorators into your classes, or not:
+Use your decorators in your classes, or not:
 ```ts
 class Document 
 {
@@ -127,21 +128,21 @@ class Document
 }
 ```
 
-Check your decorators values from anywhere in your code:
+Retrieve decorator values from anywhere in your code:
 ```ts
 console.log(componentOf(Document, 'code'))         // false
 console.log(componentOf(Document, 'components'))   // true
 ```
 
-It works with objects too:
+It also works with objects:
 ```ts
 console.log(componentOf(new Document, 'components'))   // true
 ```
 
 ### Tips and tricks
 
-Experimental decorators allow you to dynamically call decorators after your class or property has been declared.
-In the examples above, decorators may have been added dynamically while calling:
+Experimental decorators allow you to dynamically apply them after your class or property has been declared.
+In the examples above, decorators could have been added dynamically while calling:
 ```ts
 // Class decorator
 Actions(['create', 'update'])(RestrictedService)
@@ -156,7 +157,7 @@ Component<Document>()(Document.prototype, 'components')
 
 ### Types
 
-Those type shortcuts are used to facilitate coding in TypeScript:
+These TypeScript type shortcuts are used to simplify coding and improve readability:
 ```ts
 type DecorateCaller<T extends object> = (target: Type<T>) => void
 
@@ -164,35 +165,38 @@ type DecoratorCallback<T extends object, V = any> = (target: Type<T>) => V
 
 type DecoratorOfType<V = any> = (target: ObjectOrType, name: Symbol, undefinedValue: V) => V
 ```
-The API and the documentation refer to these types.
+The API and the documentation frequently refer to these types.
 
 ### decorate
 
 ```ts
 function decorate<T extends object>(name: Symbol, value: any): DecorateCaller<T>
 ```
-Creates a class decorator that persists a value associated to the class.
+Creates a class decorator that persists a value associated with the class.
 
 **Parameters:**
-- `name: Symbol` – The unique symbol used as a key for the decorator data storage.
-- `value: any` – The decorator value to store.
+- `name: Symbol` – Unique key for storing the decorator data.
+- `value: any` – The value to associate with the class decorator.
 
-**Returns:** A decorator caller function that can be applied to a class `(target: Type<T>) => void`.
+**Returns:**\
+A decorator function that can be applied to a class `(target: Type<T>) => void`.
 
 ### decorateCallback
 
 ```ts
 function decorateCallback<T extends object>(name: Symbol, callback: DecoratorCallback<T>): DecorateCaller<T>
 ```
-Similar to `decorate`, but the value is computed at decoration time by a callback function.
+Similar to `decorate`, but computes the value dynamically at decoration time using a callback.
 
 **Parameters:**
-- `name: Symbol` – The unique symbol used as a key for the decorator data storage.
-- `callback: (target: Type<T>) => any` – A function that returns a value to store.
+- `name: Symbol` – Unique key for storing the decorator data.
+- `callback: (target: Type<T>) => any` – A function returning the value to store.
 
-**Returns:** A decorator caller function that can be applied to a class `(target: Type<T>) => void`.
+**Returns:**\
+A decorator function that can be applied to a class: `(target: Type<T>) => void`.
 
 **Example:**
+Automatically decorates a class using its class name: 
 ```ts
 import { decorateCallback } from '@itrocks/decorator/class'
 
@@ -211,18 +215,19 @@ class Example {}
 ```ts
 function decoratorOf<V>(target: ObjectOrType, name: Symbol, undefinedValue: V): V
 ```
-Retrieves the decorator value from a class, returning a default value if none is set.
+Retrieves the decorator value from a class, returning a default value if none is found.
 
 **Parameters:**
-- `target: ObjectOrType` – The class or an instance of the class to retrieve decorator value from.
-- `name: Symbol` – The decorator key to retrieve.
-- `undefinedValue: V` – The value to return if no stored value is found for this decorator.
+- `target: ObjectOrType` – The class or an instance of the class.
+- `name: Symbol` – The key of the decorator to retrieve.
+- `undefinedValue: V` – A fallback value to return if no value is stored for this decorator.
 
-**Returns:** The stored decorator value, or `undefinedValue`.
+**Returns:**\
+The stored decorator value or the fallback value.
 
 **Example:**
 
-Defines a retrieval function for the `AutoInfo` decorator previously defined (see example above):
+Defines a retrieval function for the previously defined `AutoInfo` decorator (see example above):
 ```ts
 import { decoratorOf } from '@itrocks/decorator/class'
 
@@ -230,26 +235,26 @@ function autoInfoOf(target: ObjectOrType) {
 	return decoratorOf(target, INFO, 'no info')
 }
 ```
-If no decorator was defined for the target object or type, 'no info' will be returned.
+If no decorator is found, `'no info'` is returned.
 
 ### decoratorOfCallback
 
 ```ts
 function decoratorOfCallback<T extends object, V>(target: ObjectOrType<T>, name: Symbol, undefinedCallback?: DecoratorCallback<T, V>): V
 ```
-Retrieves the decorator value from a class. If not defined, computes and returns a value from the provided callback.
+Retrieves the decorator value from a class. If no value is defined, computes one using a fallback callback function.
 
 **Parameters:**
-- `target: ObjectOrType<T>` - The class or an instance of that class the retrieve decorator value from.
-- `name: Symbol` - The decorator key to retrieve.
-- `undefinedCallback?: (target: Type<T>) => V` - A fallback function that returns a default value
-  if no stored value is found for this decorator.
+- `target: ObjectOrType<T>` - The class or an instance of the class.
+- `name: Symbol` - The key of the decorator to retrieve.
+- `undefinedCallback?: (target: Type<T>) => V` - A function computing a fallback value if none is found.
 
-**Returns:** The stored or computed value.
+**Returns:**\
+The stored value or the computed value from the callback.
 
 **Example:**
 
-Defines a retrieval function for the `AutoInfo` decorator previously defined (see example above):
+Defines a retrieval function for the previously defined `AutoInfo` decorator (see example above):
 ```ts
 import { decoratorOf } from '@itrocks/decorator/class'
 
@@ -257,8 +262,7 @@ function autoInfoOf<T extends object>(target: ObjectOrType) {
 	return decoratorOfCallback<T, string>(target, INFO, target => `Class name: ${target.name}`)
 }
 ```
-If no decorator was defined for the target object or type,
-'Class name:' and the name of the target type will be returned.
+If no decorator is found, the fallback dynamically computes `'Class name:'` followed by the class name.
 
 ## Property Decorator API
 
@@ -266,13 +270,13 @@ If no decorator was defined for the target object or type,
 
 ### Types
 
-Those type shortcuts are used to facilitate coding in TypeScript:
+These TypeScript type shortcuts are used to simplify coding and improve readability:
 ```ts
 type DecorateCaller<T extends object> = (target: T, property: KeyOf<T>) => void
 
 type DecoratorCallback<T extends object, V = any> = (target: T, property: KeyOf<T>) => V
 ```
-The API and the documentation refer to these types.
+The API and the documentation frequently refer to these types.
 
 ### decorate
 
@@ -282,25 +286,28 @@ function decorate<T extends object>(name: Symbol, value: any): DecorateCaller<T>
 Defines a decorator for class properties, assigning a fixed value to the property’s metadata.
 
 **Parameters:**
-- `name: Symbol` - The unique symbol key for the decorator data storage.
-- `value: any` - The decorator value to associate with the property.
+- `name: Symbol` - Unique key used for storing the decorator data.
+- `value: any` - The value to associate with the property.
 
-**Returns:** A decorator caller function to be applied on a property.
+**Returns:**\
+A decorator function to be applied to a property.
 
 ### decorateCallback
 
 ```ts
 function decorateCallback<T extends object>(name: Symbol, callback: DecoratorCallback<T>): DecorateCaller<T>
 ```
-Similar to `decorate`, but the value is computed at decoration time by a callback function.
+Similar to `decorate`, but computes the value dynamically at decoration time using a callback.
 
 **Parameters:**
-- `name: Symbol` - The unique symbol key for the decorator data storage.
-- `callback: (target: T, property: KeyOf<T>) => any` - A function that returns a value to store.
+- `name: Symbol` - Unique key used for storing the decorator data.
+- `callback: (target: T, property: KeyOf<T>) => any` - A function returning the value to store.
 
-**Returns:** A decorator caller function to be applied on a property.
+**Returns:**\
+A decorator function to be applied on a property: `(target: T, property: KeyOf<T>) => void`.
 
 **Example:**
+Automatically computes display names for properties:
 ```ts
 import { decorateCallback } from '@itrocks/decorator/property'
 import { toDisplay }        from '@itrocks/rename'
@@ -324,19 +331,20 @@ class Example {
 ```ts
 function decoratorOf<V, T extends object>(target: ObjectOrType<T>, property: KeyOf<T>, name: Symbol, undefinedValue?: V): V
 ```
-Retrieves the decorator value from a class property, returning a default value if none is set.
+Retrieves the decorator value from a class property, returning a default value if none is found.
 
 **Parameters:**
 - `target: ObjectOrType<T>` – The class or an instance of the class.
 - `property: KeyOf<T>` – The name of the class property to retrieve decorator value from.
-- `name: Symbol` – The decorator key to retrieve.
-- `undefinedValue: V` – The value to return if no stored value is found for this decorator.
+- `name: Symbol` – The key of the decorator to retrieve.
+- `undefinedValue: V` – A fallback value to return if no value is stored for this decorator.
 
-**Returns:** The stored decorator value, or `undefinedValue`.
+**Returns:**\
+The stored decorator value or the fallback value.
 
 **Example:**
 
-Defines a retrieval function for the `Display` decorator previously defined (see example above):
+Defines a retrieval function for the previously defined `Display` decorator (see example above):
 ```ts
 import { decoratorOf } from '@itrocks/decorator/property'
 
@@ -345,28 +353,29 @@ function displayOf<T extends object>(target: ObjectOrType<T>, property: KeyOf<T>
 	return decoratorOf(target, property, DISPLAY)
 }
 ```
-If no decorator was defined for the target object or type, this will return `undefined`.
+If no decorator is found, this will return `undefined`.
 
 ### decoratorOfCallback
 
 ```ts
 function decoratorOfCallback<V, T extends object>(target: ObjectOrType<T>, property: KeyOf<T>, name: Symbol, undefinedCallback: DecoratorCallback<T, V>): V
 ```
-Retrieves the decorator value from a class property. If not defined,
-computes and returns a value from the provided callback.
+Retrieves the decorator value from a class property.
+If no value is defined, computes one using a fallback callback function.
 
 **Parameters:**
 - `target: ObjectOrType<T>` – The class or an instance of the class.
-- `property: KeyOf<T>` – The name of the class property to retrieve decorator value from.
-- `name: Symbol` – The decorator key to retrieve.
-- `undefinedCallback?: (target: T, property: KeyOf<T>) => V` – A fallback function that returns a default value
-  if no stored value is found for this decorator.
+- `property: KeyOf<T>` – The name of the property to retrieve decorator value from.
+- `name: Symbol` – The key of the decorator to retrieve.
+- `undefinedCallback?: (target: T, property: KeyOf<T>) => V` – A function computing a fallback value
+  if no value is found.
 
-**Returns:** The stored or computed value.
+**Returns:**\
+The stored value or computed value from the callback.
 
 **Example:**
 
-Defines a retrieval function for the `Display` decorator previously defined (see example above):
+Defines a retrieval function for the previously defined `Display` decorator (see example above):
 ```ts
 import { decoratorOfCallback } from '@itrocks/decorator/property'
 import { toDisplay }           from '@itrocks/rename'
@@ -376,5 +385,4 @@ function displayOf<T extends object>(target: ObjectOrType<T>, property: KeyOf<T>
 	return decoratorOfCallback<string, T>(target, property, DISPLAY, (_, property) => toDisplay(property))
 }
 ```
-If no decorator was defined for the target property, an automatically display matching the property name
-will be calculated.
+If no decorator is found, the fallback dynamically computes a display name based on the property name.
