@@ -264,6 +264,20 @@ function autoInfoOf<T extends object>(target: ObjectOrType) {
 ```
 If no decorator is found, the fallback dynamically computes `'Class name:'` followed by the class name.
 
+### ownDecoratorOf
+
+```ts
+function ownDecoratorOf<V>(target: ObjectOrType, name: Symbol, undefinedValue: V): V
+```
+Similar to [decoratorOf](#decoratorof), without traversing the prototype chain. 
+
+### ownDecoratorOfCallback
+
+```ts
+function ownDecoratorOfCallback<V>(target: ObjectOrType, name: Symbol, undefinedValue: V): V
+```
+Similar to [decoratorOfCallback](#decoratorofcallback), without traversing the prototype chain.
+
 ## Property Decorator API
 
 **Import Path:** `@itrocks/decorator/property`

@@ -33,3 +33,20 @@ export function decoratorOfCallback<T extends object, V>(
 	return Reflect.getMetadata(name, target)
 		?? undefinedCallback?.(target)
 }
+
+export function ownDecoratorOf<V>(target: ObjectOrType, name: Symbol, undefinedValue: V): V
+{
+	const result = Reflect.getOwnMetadata(name, typeOf(target))
+	return (result === undefined)
+		? undefinedValue
+		: result
+}
+
+export function ownDecoratorOfCallback<T extends object, V>(
+	target: ObjectOrType<T>, name: Symbol, undefinedCallback?: DecoratorCallback<T, V>
+): V
+{
+	target = typeOf(target)
+	return Reflect.getOwnMetadata(name, target)
+		?? undefinedCallback?.(target)
+}
