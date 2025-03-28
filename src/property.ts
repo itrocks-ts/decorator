@@ -21,7 +21,7 @@ export function decoratorOf<V, T extends object>(
 {
 	const result = Reflect.getMetadata(name, prototypeOf(target), property)
 	return (result === undefined)
-		? undefinedValue
+		? undefinedValue as V
 		: result
 }
 
