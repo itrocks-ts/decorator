@@ -5,6 +5,7 @@
 	},
 	"dependencies": {
 		"@itrocks/class-type": "latest",
+		"@itrocks/parameter-name": "latest",
 		"reflect-metadata": "^0.2"
 	},
 	"description": "A library that simplifies the declaration, persistence, and retrieval of decorator values",
@@ -55,5 +56,5 @@
 		"build:cjs": "tsc -p tsconfig.cjs.json",
 		"build:esm": "tsc -p tsconfig.esm.json"
 	},
-	"version": "0.0.9"
+	"version": "0.0.10"
 }
