@@ -6,7 +6,7 @@ import { parameterNamesFromFile } from '@itrocks/parameter-name'
 
 export type DecorateCaller<T extends object> = (target: T, property?: KeyOf<T>, index?: number) => void
 
-export type DecoratorCallback<T extends object, V = any> = (target: T, property?: KeyOf<T>, index?: number) => V
+export type DecoratorCallback<T extends object, V = any> = (target: T, property: KeyOf<T>) => V
 
 export function decorate<T extends object>(name: Symbol, value: any): DecorateCaller<T>
 {
@@ -62,14 +62,13 @@ function parameterName<T extends object>(name: Symbol, target: T, index?: number
 			'Property decorator ' + name.description + ' with no property name nor constructor parameter index'
 		)
 	}
-	let   fileName = ''
-	const stack    = (new Error().stack ?? '').split('\n')
-	let   key = 0
+	let   key   = 0
+	const stack = (new Error().stack ?? '').split('\n')
 	const until = stack.length - 1
 	while (!stack[key].match(/^\s*at Reflect\.decorate/) && (key < until)) {
 		key ++
 	}
-	const line = stack[key + 1]
-	fileName   = line.slice(line.indexOf('(') + 1, line.lastIndexOf('.js:') + 3)
+	const line     = stack[key + 1]
+	const fileName = line.slice(line.indexOf('(') + 1, line.lastIndexOf('.js:') + 3)
 	return parameterNamesFromFile(fileName, target.constructor.name, 'constructor')[index] as KeyOf<T>
 }
