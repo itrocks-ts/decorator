@@ -43,7 +43,7 @@ export function decoratorOfCallback<V, T extends object>(
 		?? undefinedCallback(target, property)
 }
 
-function parameterDecorator<T extends object>(name: Symbol, target: T, property?: KeyOf<T>, index?: number)
+export function parameterDecorator<T extends object>(name: Symbol, target: T, property?: KeyOf<T>, index?: number)
 	: [T, KeyOf<T>]
 {
 	if (property === undefined) {
