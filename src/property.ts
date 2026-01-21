@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { KeyOf }                  from '@itrocks/class-type'
 import { ObjectOrType }           from '@itrocks/class-type'
-import { prototypeOf }            from '@itrocks/class-type'
+import { prototypeTargetOf }      from '@itrocks/class-type'
 import { parameterNamesFromFile } from '@itrocks/parameter-name'
 
 export type DecorateCaller<T extends object> = (target: T, property?: KeyOf<T>, index?: number) => void
@@ -28,7 +28,7 @@ export function decoratorOf<V, T extends object>(
 	target: ObjectOrType<T>, property: KeyOf<T>, name: Symbol, undefinedValue?: V
 ): V
 {
-	const result = Reflect.getMetadata(name, prototypeOf(target), property)
+	const result = Reflect.getMetadata(name, prototypeTargetOf(target), property)
 	return (result === undefined)
 		? undefinedValue as V
 		: result
@@ -38,7 +38,7 @@ export function decoratorOfCallback<V, T extends object>(
 	target: ObjectOrType<T>, property: KeyOf<T>, name: Symbol, undefinedCallback: DecoratorCallback<T, V>
 ): V
 {
-	target = prototypeOf(target)
+	target = prototypeTargetOf(target)
 	return Reflect.getMetadata(name, target, property)
 		?? undefinedCallback(target, property)
 }
@@ -47,9 +47,7 @@ export function parameterDecorator<T extends object>(name: Symbol, target: T, pr
 	: [T, KeyOf<T>]
 {
 	if (property === undefined) {
-		if (target instanceof Function) {
-			target = target.prototype
-		}
+		target   = prototypeTargetOf(target)
 		property = parameterName(name, target, index)
 	}
 	return [target, property]
