@@ -23,7 +23,7 @@ This library streamlines the process of:
 npm install @itrocks/decorator
 ```
 
-To ensure proper behavior, configure your `tsconfig.json` to enable experimental decorators and metadata emission:
+To ensure proper behaviour, configure your `tsconfig.json` to enable experimental decorators and metadata emission:
 ```json
 {
 	"compilerOptions": {
@@ -39,26 +39,26 @@ This configuration ensures the decorators and their associated metadata are prop
 1. **Import the Tools:**
   For class decorators:
   ```ts
-  import { decorate, decorateCallback, decoratorOf, decoratorOfCallback } from '@itrocks/reflect-decorator/class'
+  import { decorate, decorateCallback, decoratorOf, decoratorOfCallback } from '@itrocks/decorator/class'
   ```
   For property decorators:
   ```ts
-  import { decorate, decorateCallback, decoratorOf, decoratorOfCallback } from '@itrocks/reflect-decorator/property'
+  import { decorate, decorateCallback, decoratorOf, decoratorOfCallback } from '@itrocks/decorator/property'
   ```
 
-2. **Define Your Decorator:**\
+2. **Define your decorator:**\
   Use `decorate` or `decorateCallback` to define a new decorator that sets metadata on a class or property.
 
-3. **Apply Your Decorator:**\
+3. **Apply your decorator:**\
   Attach your decorator to the relevant class or property.
 
-4. **Retrieve Decorator values:**\
-  Use `decoratorOf` or `decoratorOfCallback` to retrieve access stored values from previously defined decorators.
+4. **Retrieve decorator values:**\
+  Use `decoratorOf` or `decoratorOfCallback` to retrieve stored values from previously defined decorators.
   You can also provide a default fallback value or a callback if no data is present.
 
 ## Example use case
 
-In these example, type helpers from the dependency
+In these examples, type helpers from the dependency
 [@itrocks/class-type](https://www.npmjs.com/package/@itrocks/class-type) are used.
 You can use compatible types from other sources if preferred, but these helpers are provided for convenience.
 
@@ -66,8 +66,8 @@ You can use compatible types from other sources if preferred, but these helpers 
 
 Define a persistent decorator and its retrieval function:
 ```ts
-import { decorate, decoratorOf } from '@itrocks/decorator/class'
 import { ObjectOrType }          from '@itrocks/class-type'
+import { decorate, decoratorOf } from '@itrocks/decorator/class'
 
 const ACTIONS = Symbol('actions')
 
@@ -103,8 +103,8 @@ console.log(actionsOf(new RestrictedService))   // ['create', 'update']
 
 Define a persistent decorator and its retrieval function:
 ```ts
-import { decorate, decoratorOf } from '@itrocks/decorator/property'
 import { KeyOf, ObjectOrType }   from '@itrocks/class-type'
+import { decorate, decoratorOf } from '@itrocks/decorator/property'
 
 const COMPONENT = Symbol('component')
 
@@ -124,7 +124,7 @@ class Document
 	code: number
 
 	@Component()
-	components: Object[]
+	components: object[]
 }
 ```
 
@@ -196,7 +196,7 @@ Similar to `decorate`, but computes the value dynamically at decoration time usi
 A decorator function that can be applied to a class: `(target: Type<T>) => void`.
 
 **Example:**
-Automatically decorates a class using its class name: 
+Automatically decorates a class using its name: 
 ```ts
 import { decorateCallback } from '@itrocks/decorator/class'
 
@@ -240,7 +240,9 @@ If no decorator is found, `'no info'` is returned.
 ### decoratorOfCallback
 
 ```ts
-function decoratorOfCallback<T extends object, V>(target: ObjectOrType<T>, name: Symbol, undefinedCallback?: DecoratorCallback<T, V>): V
+function decoratorOfCallback<T extends object, V>(
+	target: ObjectOrType<T>, name: Symbol, undefinedCallback?: DecoratorCallback<T, V>
+): V
 ```
 Retrieves the decorator value from a class. If no value is defined, computes one using a fallback callback function.
 
@@ -256,7 +258,7 @@ The stored value or the computed value from the callback.
 
 Defines a retrieval function for the previously defined `AutoInfo` decorator (see example above):
 ```ts
-import { decoratorOf } from '@itrocks/decorator/class'
+import { decoratorOfCallback } from '@itrocks/decorator/class'
 
 function autoInfoOf<T extends object>(target: ObjectOrType) {
 	return decoratorOfCallback<T, string>(target, INFO, target => `Class name: ${target.name}`)
@@ -269,12 +271,14 @@ If no decorator is found, the fallback dynamically computes `'Class name:'` foll
 ```ts
 function ownDecoratorOf<V>(target: ObjectOrType, name: Symbol, undefinedValue: V): V
 ```
-Similar to [decoratorOf](#decoratorof), without traversing the prototype chain. 
+Similar to [decoratorOf](#decoratorof), without traversing the prototype chain.
 
 ### ownDecoratorOfCallback
 
 ```ts
-function ownDecoratorOfCallback<V>(target: ObjectOrType, name: Symbol, undefinedValue: V): V
+function ownDecoratorOfCallback<T extends object, V>(
+	target: ObjectOrType<T>, name: Symbol, undefinedCallback?: DecoratorCallback<T, V>
+): V
 ```
 Similar to [decoratorOfCallback](#decoratorofcallback), without traversing the prototype chain.
 
@@ -286,11 +290,13 @@ Similar to [decoratorOfCallback](#decoratorofcallback), without traversing the p
 
 These TypeScript type shortcuts are used to simplify coding and improve readability:
 ```ts
-type DecorateCaller<T extends object> = (target: T, property: KeyOf<T>) => void
+type DecorateCaller<T extends object> = (target: T, property?: KeyOf<T>, index?: number) => void
 
 type DecoratorCallback<T extends object, V = any> = (target: T, property: KeyOf<T>) => V
 ```
 The API and the documentation frequently refer to these types.
+
+`DecorateCaller` also works on constructor parameters (index-based).
 
 ### decorate
 
