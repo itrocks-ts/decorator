@@ -59,7 +59,7 @@ This configuration ensures the decorators and their associated metadata are prop
 ## Example use case
 
 In these examples, type helpers from the dependency
-[@itrocks/class-type](https://www.npmjs.com/package/@itrocks/class-type) are used.
+[@itrocks/class-type](https://github.com/itrocks-ts/class-type) are used.
 You can use compatible types from other sources if preferred, but these helpers are provided for convenience.
 
 ### Class-level example
