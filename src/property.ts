@@ -14,7 +14,7 @@ export type DecoratorCallback<T extends object, V = any, K extends keyof T = key
 export function decorate<T extends object>(name: symbol, value: any): DecorateCaller<T>
 {
 	return (target, property, index) => {
-		const [targetObject, parameterName] = parameterDecorator(name, target, property, index)
+		const [targetObject, parameterName] = parameterProperty(target, property, index)
 		Reflect.defineMetadata(name, value, targetObject, parameterName)
 	}
 }
@@ -22,7 +22,7 @@ export function decorate<T extends object>(name: symbol, value: any): DecorateCa
 export function decorateCallback<T extends object>(name: symbol, callback: DecoratorCallback<T>): DecorateCaller<T>
 {
 	return (target, property, index) => {
-		const [targetObject, parameterName] = parameterDecorator(name, target, property, index)
+		const [targetObject, parameterName] = parameterProperty(target, property, index)
 		Reflect.defineMetadata(name, callback(target, property ?? parameterName), targetObject, parameterName)
 	}
 }
@@ -55,15 +55,14 @@ export function metadataNameOf<T extends object>(property: keyof T)
 	) as Meta<T>
 }
 
-export function parameterDecorator<T extends object>(
-	name: symbol, target: ObjectOrType<T>, property?: keyof T, index?: number
-) : [T, Meta<T>]
+export function parameterProperty<T extends object>(target: ObjectOrType<T>, property?: keyof T, index?: number)
+	: [T, Meta<T>]
 {
 	if (property !== undefined) {
 		return [target as T, metadataNameOf(property)]
 	}
 	if (index === undefined) throw new Error(
-		'Property decorator ' + name.description + ' with no property name nor constructor parameter index'
+		'Property decorator with no property name nor constructor parameter index'
 	)
 	return [prototypeTargetOf(target), parameterName(target, index)]
 }
