@@ -1,65 +1,75 @@
 import 'reflect-metadata'
-import { KeyOf }                  from '@itrocks/class-type'
 import { ObjectOrType }           from '@itrocks/class-type'
 import { prototypeTargetOf }      from '@itrocks/class-type'
 import { parameterNamesFromFile } from '@itrocks/parameter-name'
 
-export type DecorateCaller<T extends object> = (target: T, property?: KeyOf<T>, index?: number) => void
+type Meta<T extends object>  = Extract<keyof T, string | symbol>
+type Param<T extends object> = Extract<keyof T, string>
 
-export type DecoratorCallback<T extends object, V = any> = (target: T, property: KeyOf<T>) => V
+export type DecorateCaller<T extends object, K extends Meta<T> = Meta<T>> =
+	(target: T, property?: K, index?: number) => void
 
-export function decorate<T extends object>(name: Symbol, value: any): DecorateCaller<T>
+export type DecoratorCallback<T extends object, V = any, K extends keyof T = keyof T> = (target: T, property: K) => V
+
+export function decorate<T extends object>(name: symbol, value: any): DecorateCaller<T>
 {
 	return (target, property, index) => {
-		[target, property] = parameterDecorator(name, target, property, index)
-		Reflect.defineMetadata(name, value, target, property)
+		const [targetObject, parameterName] = parameterDecorator(name, target, property, index)
+		Reflect.defineMetadata(name, value, targetObject, parameterName)
 	}
 }
 
-export function decorateCallback<T extends object>(name: Symbol, callback: DecoratorCallback<T>): DecorateCaller<T>
+export function decorateCallback<T extends object>(name: symbol, callback: DecoratorCallback<T>): DecorateCaller<T>
 {
 	return (target, property, index) => {
-		[target, property] = parameterDecorator(name, target, property, index)
-		Reflect.defineMetadata(name, callback(target, property), target, property)
+		const [targetObject, parameterName] = parameterDecorator(name, target, property, index)
+		Reflect.defineMetadata(name, callback(target, property ?? parameterName), targetObject, parameterName)
 	}
 }
 
 export function decoratorOf<V, T extends object>(
-	target: ObjectOrType<T>, property: KeyOf<T>, name: Symbol, undefinedValue?: V
+	target: ObjectOrType<T>, property: keyof T, name: symbol, undefinedValue?: V
 ): V
 {
-	const result = Reflect.getMetadata(name, prototypeTargetOf(target), property)
+	const result = Reflect.getMetadata(name, prototypeTargetOf(target), metadataNameOf(property))
 	return (result === undefined)
 		? undefinedValue as V
 		: result
 }
 
 export function decoratorOfCallback<V, T extends object>(
-	target: ObjectOrType<T>, property: KeyOf<T>, name: Symbol, undefinedCallback: DecoratorCallback<T, V>
+	target: ObjectOrType<T>, property: keyof T, name: symbol, undefinedCallback: DecoratorCallback<T, V>
 ): V
 {
-	target = prototypeTargetOf(target)
-	return Reflect.getMetadata(name, target, property)
-		?? undefinedCallback(target, property)
+	const targetObject = prototypeTargetOf(target)
+	return Reflect.getMetadata(name, targetObject, metadataNameOf(property))
+		?? undefinedCallback(targetObject, property)
 }
 
-export function parameterDecorator<T extends object>(name: Symbol, target: T, property?: KeyOf<T>, index?: number)
-	: [T, KeyOf<T>]
+export function metadataNameOf<T extends object>(property: keyof T)
 {
-	if (property === undefined) {
-		target   = prototypeTargetOf(target)
-		property = parameterName(name, target, index)
-	}
-	return [target, property]
+	return (
+		(typeof property === 'number')
+			? property.toString()
+			: property
+	) as Meta<T>
 }
 
-function parameterName<T extends object>(name: Symbol, target: T, index?: number): KeyOf<T>
+export function parameterDecorator<T extends object>(
+	name: symbol, target: ObjectOrType<T>, property?: keyof T, index?: number
+) : [T, Meta<T>]
 {
-	if (index === undefined) {
-		throw new Error(
-			'Property decorator ' + name.description + ' with no property name nor constructor parameter index'
-		)
+	if (property !== undefined) {
+		return [target as T, metadataNameOf(property)]
 	}
+	if (index === undefined) throw new Error(
+		'Property decorator ' + name.description + ' with no property name nor constructor parameter index'
+	)
+	return [prototypeTargetOf(target), parameterName(target, index)]
+}
+
+function parameterName<T extends object>(target: T, index: number)
+{
 	let   key   = 0
 	const stack = (new Error().stack ?? '').split('\n')
 	const until = stack.length - 1
@@ -68,5 +78,5 @@ function parameterName<T extends object>(name: Symbol, target: T, index?: number
 	}
 	const line     = stack[key + 1]
 	const fileName = line.slice(line.indexOf('(') + 1, line.lastIndexOf('.js:') + 3)
-	return parameterNamesFromFile(fileName, target.constructor.name, 'constructor')[index] as KeyOf<T>
+	return parameterNamesFromFile(fileName, target.constructor.name, 'constructor')[index] as Param<T>
 }
