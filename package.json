@@ -10,21 +10,19 @@
 	},
 	"description": "A library that simplifies the declaration, persistence, and retrieval of decorator values",
 	"devDependencies": {
-		"typescript": "~5.9"
+		"typescript": "^6.0"
 	},
 	"engines": {
-		"node": ">=18"
+		"node": ">=24"
 	},
 	"exports": {
 		"./class": {
 			"import": "./esm/class.js",
-			"require": "./cjs/class.js",
-			"types": "./esm/class.d.ts"
+			"require": "./cjs/class.js"
 		},
 		"./property": {
 			"import": "./esm/property.js",
-			"require": "./cjs/property.js",
-			"types": "./esm/property.d.ts"
+			"require": "./cjs/property.js"
 		}
 	},
 	"files": [
@@ -56,5 +54,5 @@
 		"build:cjs": "tsc -p tsconfig.cjs.json",
 		"build:esm": "tsc -p tsconfig.esm.json"
 	},
-	"version": "0.2.1"
+	"version": "0.2.2"
 }
