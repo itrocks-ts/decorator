@@ -29,7 +29,8 @@
 		"LICENSE",
 		"README.md",
 		"*/*.d.ts",
-		"*/*.js"
+		"*/*.js",
+		"!test"
 	],
 	"homepage": "https://it.rocks",
 	"keywords": [
@@ -52,7 +53,8 @@
 	"scripts": {
 		"build": "npm run build:cjs && npm run build:esm",
 		"build:cjs": "tsc -p tsconfig.cjs.json",
-		"build:esm": "tsc -p tsconfig.esm.json"
+		"build:esm": "tsc -p tsconfig.esm.json",
+		"test": "npm run build && tsc -p test/tsconfig.json && node --test --test-isolation=none test/*.test.js"
 	},
-	"version": "0.2.3"
+	"version": "0.2.4"
 }

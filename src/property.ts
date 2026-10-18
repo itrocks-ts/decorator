@@ -1,6 +1,7 @@
 import 'reflect-metadata'
 import { ObjectOrType }           from '@itrocks/class-type'
 import { prototypeTargetOf }      from '@itrocks/class-type'
+import { typeOf }                 from '@itrocks/class-type'
 import { parameterNamesFromFile } from '@itrocks/parameter-name'
 
 type Meta<T extends object>  = Extract<keyof T, string | symbol>
@@ -77,5 +78,5 @@ function parameterName<T extends object>(target: T, index: number)
 	}
 	const line     = stack[key + 1]
 	const fileName = line.slice(line.indexOf('(') + 1, line.lastIndexOf('.js:') + 3)
-	return parameterNamesFromFile(fileName, target.constructor.name, 'constructor')[index] as Param<T>
+	return parameterNamesFromFile(fileName, typeOf(target).name, 'constructor')[index] as Param<T>
 }

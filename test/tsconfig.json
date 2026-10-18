@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"experimentalDecorators": true,
+		"module": "nodenext",
+		"outDir": "cjs",
+		"rootDir": "fixtures",
+		"skipLibCheck": true,
+		"strict": true
+	},
+	"include": ["fixtures"]
+}
